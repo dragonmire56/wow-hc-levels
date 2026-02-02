@@ -1,0 +1,10 @@
+{
+  "region": "us",
+  "locale": "en_US",
+  "namespaces": ["profile-classic1x-us", "profile-classic-us"],
+  "characters": [
+    { "name": "whisperdin", "realm": "doomhowl" },
+    { "name": "friendone", "realm": "defias-pillager" },
+    { "name": "friendtwo", "realm": "skull-rock" }
+  ]
+}
