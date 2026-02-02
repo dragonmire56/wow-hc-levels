@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WoW HC Levels</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
+    h1 { margin: 0 0 8px; font-size: 18px; }
+    .muted { color: #666; font-size: 12px; margin-bottom: 16px; }
+    table { border-collapse: collapse; width: 100%; max-width: 780px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+    .bad { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>WoW Hardcore Levels</h1>
+  <div class="muted" id="meta">Loading…</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Character</th><th>Realm</th><th>Level</th><th>Class</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+<script>
+async function load() {
+  const res = await fetch("./levels.json", { cache: "no-store" });
+  const data = await res.json();
+
+  document.getElementById("meta").textContent =
+    "Last update: " + (data.generated_at ? new Date(data.generated_at).toLocaleString() : "unknown");
+
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+
+  for (const r of (data.results || [])) {
+    const tr = document.createElement("tr");
+    const status = r.ok ? "OK" : (r.error?.status ?? "ERR");
+    tr.innerHTML = `
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.realm)}</td>
+      <td>${r.ok ? r.level : "—"}</td>
+      <td>${escapeHtml(r.class || "—")}</td>
+      <td class="${r.ok ? "" : "bad"}">${escapeHtml(String(status))}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+load();
+</script>
+</body>
+</html>
