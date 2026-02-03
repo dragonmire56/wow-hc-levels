@@ -37,7 +37,17 @@ async function load() {
   const tbody = document.getElementById("rows");
   tbody.innerHTML = "";
 
-  for (const r of (data.results || [])) {
+  const results = [...(data.results || [])];
+
+  // Highest level first; unknown/error entries go to bottom
+  results.sort((a, b) => {
+    const la = (a && a.ok && Number.isFinite(a.level)) ? a.level : -1;
+    const lb = (b && b.ok && Number.isFinite(b.level)) ? b.level : -1;
+    if (lb !== la) return lb - la;
+    return String(a.name).localeCompare(String(b.name));
+  });
+
+  for (const r of results) {
     const tr = document.createElement("tr");
     const status = r.ok ? "OK" : (r.error?.status ?? "ERR");
     tr.innerHTML = `
