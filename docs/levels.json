@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-02-03T00:13:37.662Z",
+  "region": "us",
+  "results": [
+    {
+      "name": "Whisperdin",
+      "realm": "Doomhowl",
+      "level": 15,
+      "class": "Paladin",
+      "race": "Dwarf",
+      "ok": true,
+      "namespace_used": "profile-classic1x-us"
+    },
+    {
+      "name": "friendone",
+      "realm": "defias-pillager",
+      "ok": false,
+      "error": {
+        "status": 404,
+        "detail": "Not found in provided namespaces"
+      }
+    },
+    {
+      "name": "friendtwo",
+      "realm": "skull-rock",
+      "ok": false,
+      "error": {
+        "status": 404,
+        "detail": "Not found in provided namespaces"
+      }
+    }
+  ]
+}
