@@ -23,7 +23,6 @@ function utcDateString(d = new Date()) {
   const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
-
 function utcDateDaysAgo(days) {
   return utcDateString(new Date(Date.now() - days * 86400000));
 }
@@ -41,7 +40,6 @@ async function readJsonIfExists(path) {
 }
 
 function upsertDailyPoint(arr, date, level) {
-  // keep at most one entry per day
   const idx = arr.findIndex(x => x.date === date);
   if (idx >= 0) arr[idx].level = level;
   else arr.push({ date, level });
@@ -49,7 +47,6 @@ function upsertDailyPoint(arr, date, level) {
 }
 
 function pruneOlderThan(arr, cutoffDate) {
-  // dates are YYYY-MM-DD; lex compare works
   return arr.filter(x => x.date >= cutoffDate);
 }
 
@@ -58,17 +55,99 @@ function deltaFromWindow(arr, windowStartDate, currentLevel) {
 
   // baseline = last point on/before window start; else earliest point after start
   let baseline = null;
-
   for (const p of arr) {
     if (p.date <= windowStartDate) baseline = p;
     else break;
   }
-  if (!baseline) {
-    baseline = arr.find(p => p.date >= windowStartDate) || null;
-  }
+  if (!baseline) baseline = arr.find(p => p.date >= windowStartDate) || null;
   if (!baseline || !Number.isFinite(baseline.level)) return null;
 
   return currentLevel - baseline.level;
+}
+
+/**
+ * Vanilla / Classic XP to next level (1–60).
+ * Index = current level. Value = XP required to reach next level.
+ * Source values: Wowpedia "Vanilla / Classic table".
+ */
+const XP_TO_NEXT_CLASSIC = [
+  null,   // 0 (unused)
+  400,    // 1
+  900,    // 2
+  1400,   // 3
+  2100,   // 4
+  2800,   // 5
+  3600,   // 6
+  4500,   // 7
+  5400,   // 8
+  6500,   // 9
+  7600,   // 10
+  8800,   // 11
+  10100,  // 12
+  11400,  // 13
+  12900,  // 14
+  14400,  // 15
+  16000,  // 16
+  17700,  // 17
+  19400,  // 18
+  21300,  // 19
+  23200,  // 20
+  25200,  // 21
+  27300,  // 22
+  29400,  // 23
+  31700,  // 24
+  34000,  // 25
+  36400,  // 26
+  38900,  // 27
+  41400,  // 28
+  44300,  // 29
+  47400,  // 30
+  50800,  // 31
+  54500,  // 32
+  58600,  // 33
+  62800,  // 34
+  67100,  // 35
+  71600,  // 36
+  76100,  // 37
+  80800,  // 38
+  85700,  // 39
+  90700,  // 40
+  95800,  // 41
+  101000, // 42
+  106300, // 43
+  111800, // 44
+  117500, // 45
+  123200, // 46
+  129100, // 47
+  135100, // 48
+  141200, // 49
+  147500, // 50
+  153900, // 51
+  160400, // 52
+  167100, // 53
+  173900, // 54
+  180800, // 55
+  187900, // 56
+  195000, // 57
+  202300, // 58
+  209800, // 59
+  217400, // 60 (not used for Hardcore cap, but kept for completeness)
+];
+
+function clamp01(x) {
+  return Math.max(0, Math.min(1, x));
+}
+
+function xpMeta(level, experience) {
+  // Hardcore cap is 60 → treat as complete ring
+  if (level >= 60) {
+    return { xp_to_next: null, xp_percent: 1 };
+  }
+  const xp_to_next = XP_TO_NEXT_CLASSIC[level] ?? null;
+  if (!Number.isFinite(experience) || !Number.isFinite(xp_to_next) || xp_to_next <= 0) {
+    return { xp_to_next, xp_percent: null };
+  }
+  return { xp_to_next, xp_percent: clamp01(experience / xp_to_next) };
 }
 
 async function getToken() {
@@ -105,7 +184,7 @@ async function fetchWithFallbackNamespaces(token, realmSlug, nameLower) {
   return { ok: false, status: 404, detail: "Not found in provided namespaces" };
 }
 
-// ---- load history (daily points) ----
+// ---- history (daily points) ----
 await fs.mkdir("docs", { recursive: true });
 
 const historyPath = "docs/history.json";
@@ -113,15 +192,15 @@ const history = (await readJsonIfExists(historyPath)) ?? { version: 1, by_id: {}
 history.by_id = history.by_id || {};
 
 const today = utcDateString();
-const cutoffKeep = utcDateDaysAgo(90);       // keep ~90 days of daily points
-const windowStart = utcDateDaysAgo(7);       // rolling 7-day window
+const cutoffKeep = utcDateDaysAgo(90); // keep ~90 days
+const windowStart = utcDateDaysAgo(7); // rolling 7d
 
 const token = await getToken();
 
 const results = await Promise.all(
   cfg.characters.map(async (c) => {
     const nameLower = String(c.name || "").toLowerCase();
-    const realmSlug = String(c.realm || "").toLowerCase(); // should be slug in your config
+    const realmSlug = String(c.realm || "").toLowerCase(); // slug in your config
     const id = makeId(realmSlug, nameLower);
 
     try {
@@ -133,23 +212,28 @@ const results = await Promise.all(
           realm: c.realm,
           ok: false,
           delta_7d: null,
+          experience: null,
+          xp_to_next: null,
+          xp_percent: null,
           error: { status: out.status, detail: out.detail },
         };
       }
 
       const j = out.data;
       const level = j.level;
+      const experience = j.experience; // XP into current level
 
-      // update history for ok characters
+      // update history
       if (Number.isFinite(level)) {
         const arr = history.by_id[id] ?? [];
         upsertDailyPoint(arr, today, level);
         history.by_id[id] = pruneOlderThan(arr, cutoffKeep);
       }
 
-      // compute 7-day delta from history
       const arr = history.by_id[id] ?? [];
       const delta_7d = deltaFromWindow(arr, windowStart, level);
+
+      const { xp_to_next, xp_percent } = xpMeta(level, experience);
 
       return {
         id,
@@ -157,6 +241,9 @@ const results = await Promise.all(
         realm: j.realm?.name ?? c.realm,
         level,
         delta_7d,
+        experience: Number.isFinite(experience) ? experience : null,
+        xp_to_next,
+        xp_percent, // 0..1 (or null)
         class: j.character_class?.name,
         race: j.race?.name,
         ok: true,
@@ -169,13 +256,15 @@ const results = await Promise.all(
         realm: c.realm,
         ok: false,
         delta_7d: null,
+        experience: null,
+        xp_to_next: null,
+        xp_percent: null,
         error: { status: "fetch_error", detail: String(e) },
       };
     }
   })
 );
 
-// write outputs
 const payload = {
   generated_at: new Date().toISOString(),
   region: REGION,
