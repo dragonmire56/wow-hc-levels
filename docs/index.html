@@ -371,7 +371,7 @@
         dotEl.style.background = stale ? "rgba(180,80,60,.95)" : "rgba(70,160,90,.9)";
         hintEl.textContent = stale
           ? "Snapshot looks a bit old (over ~30 minutes). Your updater may not have run yet."
-          : "Showing latest snapshot. (Auto-sorts by level.)";
+          : "Showing latest snapshot.";
 
         // Sort: highest level first; errors/unknown at bottom; tie-break by name
         const results = [...(data.results || [])];
