@@ -1,38 +1,46 @@
 {
-  "generated_at": "2026-02-03T17:38:52.046Z",
+  "generated_at": "2026-02-03T18:34:43.921Z",
   "region": "us",
   "results": [
     {
+      "id": "doomhowl:whisperdin",
       "name": "Whisperdin",
       "realm": "Doomhowl",
       "level": 16,
+      "delta_7d": 0,
       "class": "Paladin",
       "race": "Dwarf",
       "ok": true,
       "namespace_used": "profile-classic1x-us"
     },
     {
+      "id": "doomhowl:recknups",
       "name": "Recknups",
       "realm": "Doomhowl",
       "level": 14,
+      "delta_7d": 0,
       "class": "Mage",
       "race": "Gnome",
       "ok": true,
       "namespace_used": "profile-classic1x-us"
     },
     {
+      "id": "doomhowl:thylessa",
       "name": "Thylessa",
       "realm": "Doomhowl",
       "level": 19,
+      "delta_7d": 0,
       "class": "Rogue",
       "race": "Night Elf",
       "ok": true,
       "namespace_used": "profile-classic1x-us"
     },
     {
+      "id": "doomhowl:lerthros",
       "name": "Lerthros",
       "realm": "Doomhowl",
       "level": 21,
+      "delta_7d": 0,
       "class": "Warrior",
       "race": "Human",
       "ok": true,
