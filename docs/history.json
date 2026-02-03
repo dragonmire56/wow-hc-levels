@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "by_id": {
+    "doomhowl:recknups": [
+      {
+        "date": "2026-02-03",
+        "level": 14
+      }
+    ],
+    "doomhowl:whisperdin": [
+      {
+        "date": "2026-02-03",
+        "level": 16
+      }
+    ],
+    "doomhowl:lerthros": [
+      {
+        "date": "2026-02-03",
+        "level": 21
+      }
+    ],
+    "doomhowl:thylessa": [
+      {
+        "date": "2026-02-03",
+        "level": 19
+      }
+    ]
+  },
+  "updated_at": "2026-02-03T18:55:21.288Z"
+}
