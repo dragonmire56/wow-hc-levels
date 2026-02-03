@@ -1,67 +1,412 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WoW HC Levels</title>
+  <title>WoW Hardcore Levels</title>
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
-    h1 { margin: 0 0 8px; font-size: 18px; }
-    .muted { color: #666; font-size: 12px; margin-bottom: 16px; }
-    table { border-collapse: collapse; width: 100%; max-width: 780px; }
-    th, td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
-    .bad { color: #b00020; }
+    :root{
+      --bg1:#0b0f14;
+      --bg2:#141b24;
+
+      --ink:#1b1b1b;
+      --muted:#6b5b3a;
+
+      --gold1:#f6e4a6;
+      --gold2:#caa24d;
+      --gold3:#8a6a22;
+
+      --paper1:#fbf3d1;
+      --paper2:#efe0b0;
+
+      --line: rgba(90, 70, 30, 0.25);
+      --shadow: rgba(0,0,0,.35);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(255,215,110,.08), transparent 55%),
+        radial-gradient(900px 600px at 80% 20%, rgba(120,200,255,.06), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      padding: 28px 16px 46px;
+    }
+
+    .container{
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .banner{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .title-wrap{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+
+    .crest{
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.18), transparent 40%),
+        linear-gradient(180deg, rgba(246,228,166,.18), rgba(202,162,77,.08));
+      border: 1px solid rgba(202,162,77,.45);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      position: relative;
+      flex: 0 0 auto;
+    }
+    /* little “H” rune */
+    .crest:before, .crest:after{
+      content:"";
+      position:absolute;
+      inset: 11px 20px;
+      border-left: 2px solid rgba(246,228,166,.75);
+      border-right: 2px solid rgba(246,228,166,.75);
+    }
+    .crest:after{
+      inset: 21px 15px;
+      border: none;
+      border-top: 2px solid rgba(246,228,166,.75);
+    }
+
+    h1{
+      margin:0;
+      font-size: 20px;
+      letter-spacing: .02em;
+      color: var(--gold1);
+      text-shadow: 0 1px 0 rgba(0,0,0,.55);
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+    }
+    .subtitle{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(246,228,166,.75);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .meta{
+      text-align:right;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size: 12px;
+      color: rgba(246,228,166,.78);
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--paper1), var(--paper2));
+      border-radius: 16px;
+      border: 1px solid rgba(202,162,77,.35);
+      box-shadow:
+        0 18px 40px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,.35);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.35), transparent 55%),
+        radial-gradient(900px 260px at 50% 100%, rgba(0,0,0,.08), transparent 60%);
+      opacity:.55;
+    }
+
+    .card-inner{
+      position: relative;
+      padding: 14px 14px 10px;
+    }
+
+    .toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hint{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(138,106,34,.35);
+      background: rgba(255,255,255,.35);
+      color: #4a3b1c;
+    }
+
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(70,160,90,.9);
+      box-shadow: 0 0 0 2px rgba(70,160,90,.14);
+    }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: #201a0e;
+      border-top: 1px solid var(--line);
+    }
+
+    thead th{
+      text-align:left;
+      padding: 10px 10px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .11em;
+      color: rgba(66,51,22,.85);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.22);
+    }
+
+    tbody td{
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    tbody tr:nth-child(odd){
+      background: rgba(255,255,255,.18);
+    }
+
+    tbody tr:hover{
+      background: rgba(255,255,255,.35);
+    }
+
+    .lvl{
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.40);
+      white-space: nowrap;
+    }
+
+    .pill:before{
+      content:"";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: .9;
+    }
+
+    .bad{
+      color:#7b1f1f;
+      font-weight: 700;
+    }
+
+    .small{
+      font-size: 12px;
+      color: rgba(66,51,22,.75);
+    }
+
+    /* Class colors (subtle nod to WoW) */
+    .c-warrior{ color:#C79C6E; }
+    .c-paladin{ color:#F58CBA; }
+    .c-hunter{ color:#ABD473; }
+    .c-rogue{ color:#FFF569; }
+    .c-priest{ color:#A8A8A8; }   /* white on parchment is hard; use gray */
+    .c-shaman{ color:#0070DE; }
+    .c-mage{ color:#69CCF0; }
+    .c-warlock{ color:#9482C9; }
+    .c-druid{ color:#FF7D0A; }
+
+    footer{
+      margin-top: 14px;
+      text-align:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: rgba(246,228,166,.55);
+      font-size: 12px;
+    }
+
+    @media (max-width: 680px){
+      .meta{ text-align:left; white-space: normal; }
+      thead th:nth-child(2), tbody td:nth-child(2){ display:none; } /* hide realm on small screens */
+      thead th:nth-child(5), tbody td:nth-child(5){ display:none; } /* hide status on small screens */
+    }
   </style>
 </head>
+
 <body>
-  <h1>WoW Hardcore Levels</h1>
-  <div class="muted" id="meta">Loading…</div>
+  <div class="container">
+    <div class="banner">
+      <div class="title-wrap">
+        <div class="crest" aria-hidden="true"></div>
+        <div>
+          <h1>Hardcore Party Tracker</h1>
+          <div class="subtitle">Levels only • sorted by level • powered by Blizzard API updates</div>
+        </div>
+      </div>
+      <div class="meta" id="meta">Loading…</div>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Character</th><th>Realm</th><th>Level</th><th>Class</th><th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="rows"></tbody>
-  </table>
+    <div class="card">
+      <div class="card-inner">
+        <div class="toolbar">
+          <p class="hint" id="hint">Fetching latest snapshot…</p>
+          <div class="status-pill" id="statusPill" title="This is when your browser last fetched levels.json">
+            <span class="dot" id="dot"></span>
+            <span id="lastFetch">—</span>
+          </div>
+        </div>
 
-<script>
-async function load() {
-  const res = await fetch("./levels.json", { cache: "no-store" });
-  const data = await res.json();
+        <table>
+          <thead>
+            <tr>
+              <th>Character</th>
+              <th>Realm</th>
+              <th>Level</th>
+              <th>Class</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
 
-  document.getElementById("meta").textContent =
-    "Last update: " + (data.generated_at ? new Date(data.generated_at).toLocaleString() : "unknown");
+    <footer>
+      Tip: if someone shows “ERR”, double-check realm slug + character name, or wait for the next scheduled update.
+    </footer>
+  </div>
 
-  const tbody = document.getElementById("rows");
-  tbody.innerHTML = "";
+  <script>
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
 
-  const results = [...(data.results || [])];
+    function classSlug(className){
+      const c = (className || "").toLowerCase();
+      if (c.includes("warrior")) return "c-warrior";
+      if (c.includes("paladin")) return "c-paladin";
+      if (c.includes("hunter")) return "c-hunter";
+      if (c.includes("rogue")) return "c-rogue";
+      if (c.includes("priest")) return "c-priest";
+      if (c.includes("shaman")) return "c-shaman";
+      if (c.includes("mage")) return "c-mage";
+      if (c.includes("warlock")) return "c-warlock";
+      if (c.includes("druid")) return "c-druid";
+      return "";
+    }
 
-  // Highest level first; unknown/error entries go to bottom
-  results.sort((a, b) => {
-    const la = (a && a.ok && Number.isFinite(a.level)) ? a.level : -1;
-    const lb = (b && b.ok && Number.isFinite(b.level)) ? b.level : -1;
-    if (lb !== la) return lb - la;
-    return String(a.name).localeCompare(String(b.name));
-  });
+    function isStale(iso, minutes){
+      if (!iso) return true;
+      const t = Date.parse(iso);
+      if (!Number.isFinite(t)) return true;
+      return (Date.now() - t) > minutes * 60 * 1000;
+    }
 
-  for (const r of results) {
-    const tr = document.createElement("tr");
-    const status = r.ok ? "OK" : (r.error?.status ?? "ERR");
-    tr.innerHTML = `
-      <td>${escapeHtml(r.name)}</td>
-      <td>${escapeHtml(r.realm)}</td>
-      <td>${r.ok ? r.level : "—"}</td>
-      <td>${escapeHtml(r.class || "—")}</td>
-      <td class="${r.ok ? "" : "bad"}">${escapeHtml(String(status))}</td>
-    `;
-    tbody.appendChild(tr);
-  }
-}
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-load();
-</script>
+    async function load(){
+      const metaEl = document.getElementById("meta");
+      const hintEl = document.getElementById("hint");
+      const rowsEl = document.getElementById("rows");
+      const lastFetchEl = document.getElementById("lastFetch");
+      const dotEl = document.getElementById("dot");
+
+      try {
+        const res = await fetch("./levels.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+
+        const generated = data.generated_at ? new Date(data.generated_at) : null;
+        const stale = isStale(data.generated_at, 30);
+
+        metaEl.innerHTML = generated
+          ? `Snapshot: <b>${generated.toLocaleString()}</b><br><span class="small">Region: ${escapeHtml(data.region || "us")}</span>`
+          : `Snapshot: <b>unknown</b>`;
+
+        const now = new Date();
+        lastFetchEl.textContent = "Fetched: " + now.toLocaleTimeString();
+
+        dotEl.style.background = stale ? "rgba(180,80,60,.95)" : "rgba(70,160,90,.9)";
+        hintEl.textContent = stale
+          ? "Snapshot looks a bit old (over ~30 minutes). Your updater may not have run yet."
+          : "Showing latest snapshot. (Auto-sorts by level.)";
+
+        // Sort: highest level first; errors/unknown at bottom; tie-break by name
+        const results = [...(data.results || [])];
+        results.sort((a, b) => {
+          const la = (a && a.ok && Number.isFinite(a.level)) ? a.level : -1;
+          const lb = (b && b.ok && Number.isFinite(b.level)) ? b.level : -1;
+          if (lb !== la) return lb - la;
+          return String(a.name || "").localeCompare(String(b.name || ""));
+        });
+
+        rowsEl.innerHTML = "";
+        for (const r of results) {
+          const ok = !!r.ok;
+          const lvl = ok ? r.level : null;
+          const cls = r.class || "—";
+          const status = ok ? "OK" : ("ERR " + (r.error?.status ?? ""));
+          const clsClass = classSlug(cls);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${escapeHtml(r.name || "—")}</td>
+            <td>${escapeHtml(r.realm || "—")}</td>
+            <td class="lvl">${ok ? lvl : "—"}</td>
+            <td><span class="pill ${clsClass}">${escapeHtml(cls)}</span></td>
+            <td class="${ok ? "" : "bad"}">${escapeHtml(status.trim() || "ERR")}</td>
+          `;
+          rowsEl.appendChild(tr);
+        }
+      } catch (e) {
+        metaEl.textContent = "Couldn’t load levels.json";
+        hintEl.textContent = "If you just ran the updater, wait a moment and refresh. Otherwise check your Actions logs.";
+        lastFetchEl.textContent = "Fetch failed";
+        dotEl.style.background = "rgba(180,80,60,.95)";
+        rowsEl.innerHTML = `
+          <tr><td colspan="5" class="bad">Error: ${escapeHtml(String(e))}</td></tr>
+        `;
+      }
+    }
+
+    load();
+    // Optional: refresh the page view every 60s (doesn't affect your updater schedule)
+    setInterval(load, 60000);
+  </script>
 </body>
 </html>
