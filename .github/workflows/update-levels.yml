@@ -24,22 +24,42 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Fetch levels
+      - name: Update levels.json and push
         env:
           BNET_CLIENT_ID: ${{ secrets.BNET_CLIENT_ID }}
           BNET_CLIENT_SECRET: ${{ secrets.BNET_CLIENT_SECRET }}
-        run: node scripts/update-levels.mjs
-
-      - name: Commit & push if changed
         run: |
+          set -e
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add docs/levels.json
-          git diff --cached --quiet && exit 0
+          # Try twice in case we race another run
+          for attempt in 1 2; do
+            echo "Attempt $attempt: syncing to origin/main..."
+            git fetch origin main
+            git reset --hard origin/main
 
-          git commit -m "Update levels"
+            echo "Generating docs/levels.json..."
+            node scripts/update-levels.mjs
 
-          # Bring remote changes in (just in case), then push
-          git pull --rebase origin main
-          git push origin main
+            git add docs/levels.json
+            if git diff --cached --quiet; then
+              echo "No changes to commit."
+              exit 0
+            fi
+
+            git commit -m "Update levels"
+
+            echo "Pushing..."
+            if git push origin HEAD:main; then
+              echo "Push succeeded."
+              exit 0
+            fi
+
+            echo "Push failed (likely race). Retrying..."
+            sleep 3
+          done
+
+          echo "Failed to push after retries."
+          exit 1
