@@ -3,7 +3,7 @@ name: Update WoW Levels
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7/15 * * * *" # every 15 minutes at 07,22,37,52 UTC (avoids :00)
+    - cron: "7/15 * * * *" # 07,22,37,52 UTC (avoids :00)
 
 permissions:
   contents: write
@@ -26,7 +26,13 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Update levels.json and push
+      - name: Debug trigger (temporary)
+        run: |
+          echo "event=${{ github.event_name }}"
+          echo "schedule=${{ github.event.schedule }}"
+          date -u
+
+      - name: Generate levels.json and push
         env:
           BNET_CLIENT_ID: ${{ secrets.BNET_CLIENT_ID }}
           BNET_CLIENT_SECRET: ${{ secrets.BNET_CLIENT_SECRET }}
@@ -45,4 +51,23 @@ jobs:
             echo "Generating docs/levels.json..."
             node scripts/update-levels.mjs
 
-            git ad
+            git add docs/levels.json
+            if git diff --cached --quiet; then
+              echo "No changes to commit."
+              exit 0
+            fi
+
+            git commit -m "Update levels"
+
+            echo "Pushing..."
+            if git push origin HEAD:main; then
+              echo "Push succeeded."
+              exit 0
+            fi
+
+            echo "Push failed (likely race). Retrying..."
+            sleep 3
+          done
+
+          echo "Failed to push after retries."
+          exit 1
