@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-03T00:13:37.662Z",
+  "generated_at": "2026-02-03T00:32:08.459Z",
   "region": "us",
   "results": [
     {
@@ -12,22 +12,31 @@
       "namespace_used": "profile-classic1x-us"
     },
     {
-      "name": "friendone",
-      "realm": "defias-pillager",
-      "ok": false,
-      "error": {
-        "status": 404,
-        "detail": "Not found in provided namespaces"
-      }
+      "name": "Recknups",
+      "realm": "Doomhowl",
+      "level": 14,
+      "class": "Mage",
+      "race": "Gnome",
+      "ok": true,
+      "namespace_used": "profile-classic1x-us"
     },
     {
-      "name": "friendtwo",
-      "realm": "skull-rock",
-      "ok": false,
-      "error": {
-        "status": 404,
-        "detail": "Not found in provided namespaces"
-      }
+      "name": "Thylessa",
+      "realm": "Doomhowl",
+      "level": 18,
+      "class": "Rogue",
+      "race": "Night Elf",
+      "ok": true,
+      "namespace_used": "profile-classic1x-us"
+    },
+    {
+      "name": "Lerthros",
+      "realm": "Doomhowl",
+      "level": 20,
+      "class": "Warrior",
+      "race": "Human",
+      "ok": true,
+      "namespace_used": "profile-classic1x-us"
     }
   ]
 }
