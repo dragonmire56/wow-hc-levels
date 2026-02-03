@@ -3,7 +3,7 @@ name: Update WoW Levels
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *" # every 15 minutes (UTC)
+    - cron: "7/15 * * * *" # every 15 minutes at 07,22,37,52 UTC (avoids :00)
 
 permissions:
   contents: write
@@ -45,23 +45,4 @@ jobs:
             echo "Generating docs/levels.json..."
             node scripts/update-levels.mjs
 
-            git add docs/levels.json
-            if git diff --cached --quiet; then
-              echo "No changes to commit."
-              exit 0
-            fi
-
-            git commit -m "Update levels"
-
-            echo "Pushing..."
-            if git push origin HEAD:main; then
-              echo "Push succeeded."
-              exit 0
-            fi
-
-            echo "Push failed (likely race). Retrying..."
-            sleep 3
-          done
-
-          echo "Failed to push after retries."
-          exit 1
+            git ad
