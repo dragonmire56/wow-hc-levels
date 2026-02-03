@@ -48,6 +48,7 @@ jobs:
             node scripts/update-levels.mjs
 
             git add docs/levels.json
+            git add -f docs/history.json
             git diff --cached --quiet && exit 0
 
             git commit -m "Update levels"
