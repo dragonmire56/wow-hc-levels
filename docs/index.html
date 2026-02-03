@@ -178,6 +178,14 @@
       box-shadow: 0 0 0 2px rgba(70,160,90,.14);
     }
 
+    .delta-week{
+      font-size: 12px;
+      font-weight: 800;
+      margin-left: 8px;
+      color: #1f6f3b;
+    }
+
+
     table{
       width: 100%;
       border-collapse: collapse;
@@ -386,7 +394,14 @@
           tr.innerHTML = `
             <td>${escapeHtml(r.name || "—")}</td>
             <td>${escapeHtml(r.realm || "—")}</td>
-            <td class="lvl">${ok ? lvl : "—"}</td>
+            <td class="lvl">
+              ${ok ? lvl : "—"}
+              ${
+                ok && Number.isFinite(r.delta_7d) && r.delta_7d > 0
+                ? `<span class="delta-week">(+${r.delta_7d} 7d)</span>`
+                : ``
+              }
+            </td>
             <td><span class="pill ${clsClass}">${escapeHtml(cls)}</span></td>
             <td class="${ok ? "" : "bad"}">${escapeHtml(status.trim() || "ERR")}</td>
           `;
