@@ -3,7 +3,7 @@ name: Update WoW Levels
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"  # every 15 minutes (UTC)
+    - cron: "*/5 * * * *"  # every 15 minutes (UTC)
 
 permissions:
   contents: write
