@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-03T09:08:32.534Z",
+  "generated_at": "2026-02-03T11:09:31.699Z",
   "region": "us",
   "results": [
     {
@@ -23,7 +23,7 @@
     {
       "name": "Thylessa",
       "realm": "Doomhowl",
-      "level": 18,
+      "level": 19,
       "class": "Rogue",
       "race": "Night Elf",
       "ok": true,
@@ -32,7 +32,7 @@
     {
       "name": "Lerthros",
       "realm": "Doomhowl",
-      "level": 20,
+      "level": 21,
       "class": "Warrior",
       "race": "Human",
       "ok": true,
