@@ -3,7 +3,7 @@ name: Update WoW Levels
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7/15 * * * *" # 07,22,37,52 UTC
+    - cron: "7/15 * * * *" # every 15 minutes, offset to avoid the top of hour
 
 permissions:
   contents: write
@@ -26,10 +26,25 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Generate levels.json + history.json and push
+      - name: Fetch levels (and write history)
         env:
           BNET_CLIENT_ID: ${{ secrets.BNET_CLIENT_ID }}
           BNET_CLIENT_SECRET: ${{ secrets.BNET_CLIENT_SECRET }}
+        run: |
+          set -e
+          node scripts/update-levels.mjs
+
+          echo "---- docs directory ----"
+          ls -la docs || true
+
+          echo "---- sanity check ----"
+          test -f docs/levels.json
+          test -f docs/history.json
+
+          echo "---- git status ----"
+          git status --porcelain
+
+      - name: Commit & push if changed
         run: |
           set -e
           git config user.name "github-actions[bot]"
@@ -39,16 +54,19 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            # Re-generate after reset so we always commit a clean diff
             node scripts/update-levels.mjs
 
-            # IMPORTANT: add both files
+            # Add both JSON outputs
             git add docs/levels.json docs/history.json
 
             git diff --cached --quiet && exit 0
             git commit -m "Update levels"
+
             if git push origin HEAD:main; then
               exit 0
             fi
+
             sleep 3
           done
 
