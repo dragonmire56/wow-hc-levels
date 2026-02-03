@@ -4,8 +4,8 @@
   "namespaces": ["profile-classic1x-us", "profile-classic-us"],
   "characters": [
     { "name": "whisperdin", "realm": "doomhowl" },
-    { "name": "recknups", "realm": "doomhowl" }
-    { "name": "thylessa", "realm": "doomhowl" }
+    { "name": "recknups", "realm": "doomhowl" },
+    { "name": "thylessa", "realm": "doomhowl" },
     { "name": "lerthros", "realm": "doomhowl" }
 
   ]
