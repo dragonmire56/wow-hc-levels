@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-03T23:55:18.799Z",
+  "generated_at": "2026-02-04T05:01:03.568Z",
   "region": "us",
   "results": [
     {
@@ -34,11 +34,11 @@
       "id": "doomhowl:thylessa",
       "name": "Thylessa",
       "realm": "Doomhowl",
-      "level": 19,
-      "delta_7d": 0,
-      "experience": 18982,
-      "xp_to_next": 21300,
-      "xp_percent": 0.8911737089201878,
+      "level": 20,
+      "delta_7d": 1,
+      "experience": 10993,
+      "xp_to_next": 23200,
+      "xp_percent": 0.4738362068965517,
       "class": "Rogue",
       "race": "Night Elf",
       "ok": true,
