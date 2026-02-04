@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "by_id": {
+    "doomhowl:lerthros": [
+      {
+        "t": 1770225884380,
+        "xp": 222671
+      }
+    ],
+    "doomhowl:recknups": [
+      {
+        "t": 1770225884380,
+        "xp": 65791
+      }
+    ],
+    "doomhowl:whisperdin": [
+      {
+        "t": 1770225884380,
+        "xp": 100351
+      }
+    ],
+    "doomhowl:thylessa": [
+      {
+        "t": 1770225884380,
+        "xp": 178193
+      }
+    ],
+    "doomhowl:biggles": [
+      {
+        "t": 1770225884380,
+        "xp": 2964610
+      }
+    ]
+  },
+  "updated_at": "2026-02-04T17:24:45.386Z"
+}
