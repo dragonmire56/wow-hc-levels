@@ -45,7 +45,7 @@ function clamp01(x) {
 
 /**
  * Vanilla / Classic XP to next level (1–60).
- * Source values: Wowpedia "Vanilla / Classic table".
+ * Index = current level. Value = XP required to reach next level.
  */
 const XP_TO_NEXT_CLASSIC = [
   null,   // 0
@@ -108,7 +108,7 @@ const XP_TO_NEXT_CLASSIC = [
   195000, // 57
   202300, // 58
   209800, // 59
-  217400, // 60 (not used to level beyond 60)
+  217400, // 60 (not used beyond 60)
 ];
 
 // XP_START[level] = total XP needed to reach the START of this level.
@@ -124,6 +124,7 @@ const XP_START = (() => {
 
 function xpMeta(level, experience) {
   if (level >= 60) return { xp_to_next: null, xp_percent: 1 };
+
   const xp_to_next = XP_TO_NEXT_CLASSIC[level] ?? null;
   if (!Number.isFinite(experience) || !Number.isFinite(xp_to_next) || xp_to_next <= 0) {
     return { xp_to_next, xp_percent: null };
@@ -165,10 +166,9 @@ function deltaFromWindow(arr, windowStartDate, currentLevel) {
 
 // ---- xp history helpers (timestamped points) ----
 function pruneXpOlderThan(arr, cutoffMs) {
-  return arr.filter(x => Number.isFinite(x.t) && x.t >= cutoffMs);
+  return arr.filter(x => Number.isFinite(x.t) && x.t >= cutoffMs && Number.isFinite(x.xp));
 }
 function pushXpPoint(arr, tMs, totalXp) {
-  // If last point is same minute, overwrite
   const last = arr[arr.length - 1];
   if (last && Math.abs(last.t - tMs) < 60000) {
     last.xp = totalXp;
@@ -178,14 +178,21 @@ function pushXpPoint(arr, tMs, totalXp) {
   }
 }
 
-// Build a fixed-length spark series (0..100) from XP points in last 72h
-function buildSpark3d(points, nowMs) {
-  const WINDOW_MS = 72 * 3600 * 1000;  // 3 days
-  const BIN_COUNT = 36;                // 2-hour bins
+/**
+ * Build a fixed-length spark series (0..100) from XP points in last 7d.
+ * We bin to 56 points (~3 hours per point).
+ */
+function buildSpark7d(points, nowMs) {
+  const WINDOW_MS = 7 * 24 * 3600 * 1000; // 7 days
+  const BIN_COUNT = 56;                   // ~3-hour bins
   const BIN_MS = WINDOW_MS / BIN_COUNT;
 
   const startMs = nowMs - WINDOW_MS;
-  const relevant = points.filter(p => p.t >= startMs && p.t <= nowMs && Number.isFinite(p.xp));
+
+  const relevant = points
+    .filter(p => p.t >= startMs && p.t <= nowMs && Number.isFinite(p.xp))
+    .sort((a, b) => a.t - b.t);
+
   if (relevant.length < 2) return { spark: null, gained: null };
 
   // Fill bins with the latest xp observed up to bin end
@@ -208,8 +215,8 @@ function buildSpark3d(points, nowMs) {
 
   const min = Math.min(...series);
   const max = Math.max(...series);
-  let spark;
 
+  let spark;
   if (!Number.isFinite(min) || !Number.isFinite(max)) {
     spark = null;
   } else if (max === min) {
@@ -273,7 +280,7 @@ const cutoffKeepDaily = utcDateDaysAgo(90);
 const windowStart = utcDateDaysAgo(7);
 
 const nowMs = Date.now();
-const xpCutoffMs = nowMs - (96 * 3600 * 1000); // keep ~4 days of xp points
+const xpCutoffMs = nowMs - (10 * 24 * 3600 * 1000); // keep ~10 days of xp points
 
 const token = await getToken();
 
@@ -295,8 +302,8 @@ const results = await Promise.all(
           experience: null,
           xp_to_next: null,
           xp_percent: null,
-          spark_3d: null,
-          xp_gained_3d: null,
+          spark_7d: null,
+          xp_gained_7d: null,
           error: { status: out.status, detail: out.detail },
         };
       }
@@ -318,7 +325,7 @@ const results = await Promise.all(
       // --- xp ring meta ---
       const { xp_to_next, xp_percent } = xpMeta(level, experience);
 
-      // --- xp time series for sparkline ---
+      // --- xp time series for sparkline (cumulative XP) ---
       const total_xp = totalXpClassic(level, experience);
       if (Number.isFinite(total_xp)) {
         const arr = xpHistory.by_id[id] ?? [];
@@ -328,7 +335,7 @@ const results = await Promise.all(
       }
 
       const xpArr = xpHistory.by_id[id] ?? [];
-      const { spark, gained } = buildSpark3d(xpArr, nowMs);
+      const { spark, gained } = buildSpark7d(xpArr, nowMs);
 
       return {
         id,
@@ -338,9 +345,9 @@ const results = await Promise.all(
         delta_7d,
         experience: Number.isFinite(experience) ? experience : null,
         xp_to_next,
-        xp_percent,          // 0..1
-        spark_3d: spark,     // array of 0..100 (or null)
-        xp_gained_3d: gained,// raw xp gained over last 3 days (or null)
+        xp_percent,           // 0..1
+        spark_7d: spark,      // array of 0..100 (or null)
+        xp_gained_7d: gained, // raw xp gained (or null)
         class: j.character_class?.name,
         race: j.race?.name,
         ok: true,
@@ -356,8 +363,8 @@ const results = await Promise.all(
         experience: null,
         xp_to_next: null,
         xp_percent: null,
-        spark_3d: null,
-        xp_gained_3d: null,
+        spark_7d: null,
+        xp_gained_7d: null,
         error: { status: "fetch_error", detail: String(e) },
       };
     }
