@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-04T07:34:44.244Z",
+  "generated_at": "2026-02-04T10:04:14.781Z",
   "region": "us",
   "results": [
     {
@@ -48,11 +48,11 @@
       "id": "doomhowl:lerthros",
       "name": "Lerthros",
       "realm": "Doomhowl",
-      "level": 21,
-      "delta_7d": 0,
-      "experience": 76,
-      "xp_to_next": 25200,
-      "xp_percent": 0.003015873015873016,
+      "level": 22,
+      "delta_7d": 1,
+      "experience": 7071,
+      "xp_to_next": 27300,
+      "xp_percent": 0.259010989010989,
       "class": "Warrior",
       "race": "Human",
       "ok": true,
