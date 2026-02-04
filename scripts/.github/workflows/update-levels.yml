@@ -41,10 +41,24 @@ jobs:
 
             node scripts/update-levels.mjs
 
-            git add docs/levels.json docs/history.json docs/xp_history.json
-            git diff --cached --quiet && exit 0
+            echo "---- docs directory ----"
+            ls -la docs || true
 
+            echo "---- ensure files exist ----"
+            test -f docs/levels.json
+            test -f docs/history.json
+            test -f docs/xp_history.json
+
+            echo "---- check-ignore (if any) ----"
+            git check-ignore -v docs/xp_history.json || true
+
+            # Stage (force add xp_history in case a .gitignore rule blocks it)
+            git add docs/levels.json docs/history.json
+            git add -f docs/xp_history.json
+
+            git diff --cached --quiet && exit 0
             git commit -m "Update levels"
+
             if git push origin HEAD:main; then
               exit 0
             fi
