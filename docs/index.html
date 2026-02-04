@@ -346,7 +346,7 @@
         <div class="crest" aria-hidden="true"><span class="crest-text">HC</span></div>
         <div>
           <h1>Hardcore Party Tracker</h1>
-          <div class="subtitle">Levels only • sorted by level • classic vibe</div>
+          <div class="subtitle">Levels only • sorted by level </div>
         </div>
       </div>
       <div class="meta" id="meta">Loading…</div>
@@ -454,8 +454,8 @@
 
         dotEl.style.background = stale ? "rgba(180,80,60,.95)" : "rgba(70,160,90,.9)";
         hintEl.textContent = stale
-          ? "Snapshot looks a bit old (over ~30 minutes). Your updater may not have run yet."
-          : "Showing latest snapshot. (Sorted by level.)";
+          ? "Snapshot looks a bit old (over ~30 minutes). The updater may not have run yet."
+          : "Showing latest snapshot.";
 
         // Sort: highest level first; errors/unknown at bottom; tie-break by name
         const results = [...(data.results || [])];
