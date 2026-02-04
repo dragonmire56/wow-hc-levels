@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Generate JSON and push
+      - name: Generate JSON and push (with diagnostics)
         env:
           BNET_CLIENT_ID: ${{ secrets.BNET_CLIENT_ID }}
           BNET_CLIENT_SECRET: ${{ secrets.BNET_CLIENT_SECRET }}
@@ -36,33 +36,47 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           for attempt in 1 2; do
+            echo "=== Attempt $attempt ==="
             git fetch origin main
             git reset --hard origin/main
 
+            echo "=== Prove script contains xp_history ==="
+            grep -n "xp_history" -n scripts/update-levels.mjs || true
+            node -e "import('node:fs/promises').then(async fs=>{const s=await fs.readFile('scripts/update-levels.mjs','utf8'); console.log('contains_xp_history_json=', s.includes('docs/xp_history.json'));})"
+
+            echo "=== Run updater ==="
             node scripts/update-levels.mjs
 
-            echo "---- docs directory ----"
+            echo "=== docs directory after run ==="
             ls -la docs || true
 
-            echo "---- ensure files exist ----"
+            echo "=== Ensure files exist ==="
             test -f docs/levels.json
             test -f docs/history.json
             test -f docs/xp_history.json
 
-            echo "---- check-ignore (if any) ----"
+            echo "=== First lines of xp_history.json ==="
+            head -n 20 docs/xp_history.json || true
+
+            echo "=== Check ignore rules ==="
             git check-ignore -v docs/xp_history.json || true
 
-            # Stage (force add xp_history in case a .gitignore rule blocks it)
+            echo "=== Stage files ==="
             git add docs/levels.json docs/history.json
             git add -f docs/xp_history.json
+
+            echo "=== What will be committed? ==="
+            git diff --cached --name-status || true
 
             git diff --cached --quiet && exit 0
             git commit -m "Update levels"
 
+            echo "=== Push ==="
             if git push origin HEAD:main; then
               exit 0
             fi
 
+            echo "Push failed, retrying..."
             sleep 3
           done
 
