@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-04T14:27:52.600Z",
+  "generated_at": "2026-02-04T14:33:14.599Z",
   "region": "us",
   "results": [
     {
@@ -55,6 +55,20 @@
       "xp_percent": 0.259010989010989,
       "class": "Warrior",
       "race": "Human",
+      "ok": true,
+      "namespace_used": "profile-classic1x-us"
+    },
+    {
+      "id": "doomhowl:biggles",
+      "name": "Biggles",
+      "realm": "Doomhowl",
+      "level": 54,
+      "delta_7d": 0,
+      "experience": 29610,
+      "xp_to_next": 173900,
+      "xp_percent": 0.17027027027027028,
+      "class": "Druid",
+      "race": "Tauren",
       "ok": true,
       "namespace_used": "profile-classic1x-us"
     }
