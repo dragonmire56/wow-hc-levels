@@ -39,39 +39,16 @@ async function readJsonIfExists(path) {
   }
 }
 
-function upsertDailyPoint(arr, date, level) {
-  const idx = arr.findIndex(x => x.date === date);
-  if (idx >= 0) arr[idx].level = level;
-  else arr.push({ date, level });
-  arr.sort((a, b) => a.date.localeCompare(b.date));
-}
-
-function pruneOlderThan(arr, cutoffDate) {
-  return arr.filter(x => x.date >= cutoffDate);
-}
-
-function deltaFromWindow(arr, windowStartDate, currentLevel) {
-  if (!arr?.length || !Number.isFinite(currentLevel)) return null;
-
-  // baseline = last point on/before window start; else earliest point after start
-  let baseline = null;
-  for (const p of arr) {
-    if (p.date <= windowStartDate) baseline = p;
-    else break;
-  }
-  if (!baseline) baseline = arr.find(p => p.date >= windowStartDate) || null;
-  if (!baseline || !Number.isFinite(baseline.level)) return null;
-
-  return currentLevel - baseline.level;
+function clamp01(x) {
+  return Math.max(0, Math.min(1, x));
 }
 
 /**
  * Vanilla / Classic XP to next level (1–60).
- * Index = current level. Value = XP required to reach next level.
  * Source values: Wowpedia "Vanilla / Classic table".
  */
 const XP_TO_NEXT_CLASSIC = [
-  null,   // 0 (unused)
+  null,   // 0
   400,    // 1
   900,    // 2
   1400,   // 3
@@ -131,23 +108,117 @@ const XP_TO_NEXT_CLASSIC = [
   195000, // 57
   202300, // 58
   209800, // 59
-  217400, // 60 (not used for Hardcore cap, but kept for completeness)
+  217400, // 60 (not used to level beyond 60)
 ];
 
-function clamp01(x) {
-  return Math.max(0, Math.min(1, x));
-}
+// XP_START[level] = total XP needed to reach the START of this level.
+const XP_START = (() => {
+  const start = Array(61).fill(0);
+  start[1] = 0;
+  for (let lvl = 2; lvl <= 60; lvl++) {
+    const prev = XP_TO_NEXT_CLASSIC[lvl - 1];
+    start[lvl] = start[lvl - 1] + (Number.isFinite(prev) ? prev : 0);
+  }
+  return start;
+})();
 
 function xpMeta(level, experience) {
-  // Hardcore cap is 60 → treat as complete ring
-  if (level >= 60) {
-    return { xp_to_next: null, xp_percent: 1 };
-  }
+  if (level >= 60) return { xp_to_next: null, xp_percent: 1 };
   const xp_to_next = XP_TO_NEXT_CLASSIC[level] ?? null;
   if (!Number.isFinite(experience) || !Number.isFinite(xp_to_next) || xp_to_next <= 0) {
     return { xp_to_next, xp_percent: null };
   }
   return { xp_to_next, xp_percent: clamp01(experience / xp_to_next) };
+}
+
+function totalXpClassic(level, experience) {
+  if (!Number.isFinite(level) || level < 1) return null;
+  const base = XP_START[Math.min(level, 60)] ?? null;
+  if (!Number.isFinite(base)) return null;
+  const exp = Number.isFinite(experience) ? experience : 0;
+  return base + exp;
+}
+
+// ---- weekly level history helpers (daily points) ----
+function upsertDailyPoint(arr, date, level) {
+  const idx = arr.findIndex(x => x.date === date);
+  if (idx >= 0) arr[idx].level = level;
+  else arr.push({ date, level });
+  arr.sort((a, b) => a.date.localeCompare(b.date));
+}
+function pruneDailyOlderThan(arr, cutoffDate) {
+  return arr.filter(x => x.date >= cutoffDate);
+}
+function deltaFromWindow(arr, windowStartDate, currentLevel) {
+  if (!arr?.length || !Number.isFinite(currentLevel)) return null;
+
+  let baseline = null;
+  for (const p of arr) {
+    if (p.date <= windowStartDate) baseline = p;
+    else break;
+  }
+  if (!baseline) baseline = arr.find(p => p.date >= windowStartDate) || null;
+  if (!baseline || !Number.isFinite(baseline.level)) return null;
+
+  return currentLevel - baseline.level;
+}
+
+// ---- xp history helpers (timestamped points) ----
+function pruneXpOlderThan(arr, cutoffMs) {
+  return arr.filter(x => Number.isFinite(x.t) && x.t >= cutoffMs);
+}
+function pushXpPoint(arr, tMs, totalXp) {
+  // If last point is same minute, overwrite
+  const last = arr[arr.length - 1];
+  if (last && Math.abs(last.t - tMs) < 60000) {
+    last.xp = totalXp;
+    last.t = tMs;
+  } else {
+    arr.push({ t: tMs, xp: totalXp });
+  }
+}
+
+// Build a fixed-length spark series (0..100) from XP points in last 72h
+function buildSpark3d(points, nowMs) {
+  const WINDOW_MS = 72 * 3600 * 1000;  // 3 days
+  const BIN_COUNT = 36;                // 2-hour bins
+  const BIN_MS = WINDOW_MS / BIN_COUNT;
+
+  const startMs = nowMs - WINDOW_MS;
+  const relevant = points.filter(p => p.t >= startMs && p.t <= nowMs && Number.isFinite(p.xp));
+  if (relevant.length < 2) return { spark: null, gained: null };
+
+  // Fill bins with the latest xp observed up to bin end
+  let idx = 0;
+  let lastXp = relevant[0].xp;
+  const series = [];
+
+  for (let i = 0; i < BIN_COUNT; i++) {
+    const binEnd = startMs + (i + 1) * BIN_MS;
+    while (idx < relevant.length && relevant[idx].t <= binEnd) {
+      lastXp = relevant[idx].xp;
+      idx++;
+    }
+    series.push(lastXp);
+  }
+
+  const first = series.find(v => Number.isFinite(v));
+  const last = series[series.length - 1];
+  const gained = (Number.isFinite(first) && Number.isFinite(last)) ? (last - first) : null;
+
+  const min = Math.min(...series);
+  const max = Math.max(...series);
+  let spark;
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) {
+    spark = null;
+  } else if (max === min) {
+    spark = series.map(() => 50);
+  } else {
+    spark = series.map(v => Math.round(((v - min) / (max - min)) * 100));
+  }
+
+  return { spark, gained };
 }
 
 async function getToken() {
@@ -184,16 +255,25 @@ async function fetchWithFallbackNamespaces(token, realmSlug, nameLower) {
   return { ok: false, status: 404, detail: "Not found in provided namespaces" };
 }
 
-// ---- history (daily points) ----
+// ---- load history files ----
 await fs.mkdir("docs", { recursive: true });
 
-const historyPath = "docs/history.json";
-const history = (await readJsonIfExists(historyPath)) ?? { version: 1, by_id: {} };
-history.by_id = history.by_id || {};
+// daily level history (for delta_7d)
+const levelHistoryPath = "docs/history.json";
+const levelHistory = (await readJsonIfExists(levelHistoryPath)) ?? { version: 1, by_id: {} };
+levelHistory.by_id = levelHistory.by_id || {};
+
+// xp history (for sparkline)
+const xpHistoryPath = "docs/xp_history.json";
+const xpHistory = (await readJsonIfExists(xpHistoryPath)) ?? { version: 1, by_id: {} };
+xpHistory.by_id = xpHistory.by_id || {};
 
 const today = utcDateString();
-const cutoffKeep = utcDateDaysAgo(90); // keep ~90 days
-const windowStart = utcDateDaysAgo(7); // rolling 7d
+const cutoffKeepDaily = utcDateDaysAgo(90);
+const windowStart = utcDateDaysAgo(7);
+
+const nowMs = Date.now();
+const xpCutoffMs = nowMs - (96 * 3600 * 1000); // keep ~4 days of xp points
 
 const token = await getToken();
 
@@ -215,6 +295,8 @@ const results = await Promise.all(
           experience: null,
           xp_to_next: null,
           xp_percent: null,
+          spark_3d: null,
+          xp_gained_3d: null,
           error: { status: out.status, detail: out.detail },
         };
       }
@@ -223,17 +305,30 @@ const results = await Promise.all(
       const level = j.level;
       const experience = j.experience; // XP into current level
 
-      // update history
+      // --- update daily level history ---
       if (Number.isFinite(level)) {
-        const arr = history.by_id[id] ?? [];
+        const arr = levelHistory.by_id[id] ?? [];
         upsertDailyPoint(arr, today, level);
-        history.by_id[id] = pruneOlderThan(arr, cutoffKeep);
+        levelHistory.by_id[id] = pruneDailyOlderThan(arr, cutoffKeepDaily);
       }
 
-      const arr = history.by_id[id] ?? [];
-      const delta_7d = deltaFromWindow(arr, windowStart, level);
+      const dailyArr = levelHistory.by_id[id] ?? [];
+      const delta_7d = deltaFromWindow(dailyArr, windowStart, level);
 
+      // --- xp ring meta ---
       const { xp_to_next, xp_percent } = xpMeta(level, experience);
+
+      // --- xp time series for sparkline ---
+      const total_xp = totalXpClassic(level, experience);
+      if (Number.isFinite(total_xp)) {
+        const arr = xpHistory.by_id[id] ?? [];
+        const pruned = pruneXpOlderThan(arr, xpCutoffMs);
+        pushXpPoint(pruned, nowMs, total_xp);
+        xpHistory.by_id[id] = pruned;
+      }
+
+      const xpArr = xpHistory.by_id[id] ?? [];
+      const { spark, gained } = buildSpark3d(xpArr, nowMs);
 
       return {
         id,
@@ -243,7 +338,9 @@ const results = await Promise.all(
         delta_7d,
         experience: Number.isFinite(experience) ? experience : null,
         xp_to_next,
-        xp_percent, // 0..1 (or null)
+        xp_percent,          // 0..1
+        spark_3d: spark,     // array of 0..100 (or null)
+        xp_gained_3d: gained,// raw xp gained over last 3 days (or null)
         class: j.character_class?.name,
         race: j.race?.name,
         ok: true,
@@ -259,6 +356,8 @@ const results = await Promise.all(
         experience: null,
         xp_to_next: null,
         xp_percent: null,
+        spark_3d: null,
+        xp_gained_3d: null,
         error: { status: "fetch_error", detail: String(e) },
       };
     }
@@ -271,9 +370,11 @@ const payload = {
   results,
 };
 
-history.updated_at = new Date().toISOString();
+levelHistory.updated_at = new Date().toISOString();
+xpHistory.updated_at = new Date().toISOString();
 
 await fs.writeFile("docs/levels.json", JSON.stringify(payload, null, 2) + "\n", "utf8");
-await fs.writeFile(historyPath, JSON.stringify(history, null, 2) + "\n", "utf8");
+await fs.writeFile(levelHistoryPath, JSON.stringify(levelHistory, null, 2) + "\n", "utf8");
+await fs.writeFile(xpHistoryPath, JSON.stringify(xpHistory, null, 2) + "\n", "utf8");
 
-console.log("Wrote docs/levels.json and docs/history.json");
+console.log("Wrote docs/levels.json, docs/history.json, docs/xp_history.json");
