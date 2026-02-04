@@ -212,12 +212,6 @@
       background: rgba(255,255,255,.35);
     }
 
-    .lvl{
-      font-variant-numeric: tabular-nums;
-      font-weight: 800;
-      letter-spacing: .02em;
-    }
-
     .pill{
       display:inline-flex;
       align-items:center;
@@ -249,13 +243,15 @@
       white-space: nowrap;
     }
 
-    /* Level ring */
+    /* Level cell layout */
     .lvlCell{
       display:flex;
       align-items:center;
       gap: 10px;
+      white-space: nowrap;
     }
 
+    /* Level ring (shades only the rim) */
     .ring{
       --p: 0;
       width: 34px;
@@ -277,9 +273,9 @@
     .ring::after{
       content:"";
       position:absolute;
-      inset: 6px;
+      inset: 6px; /* makes it a rim, not a filled disk */
       border-radius: 999px;
-      background: linear-gradient(180deg, var(--paper1), var(--paper2));
+      background: linear-gradient(180deg, var(--paper1), var(--paper2)); /* opaque center */
       box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
     }
 
@@ -296,6 +292,24 @@
       background: conic-gradient(rgba(0,0,0,.10) 0turn, rgba(0,0,0,.18) 0);
     }
 
+    /* Sparkline */
+    .spark{
+      width: 86px;
+      height: 24px;
+      display: block;
+    }
+    .spark path{
+      fill: none;
+      stroke: rgba(40,160,70,.90);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .spark .bg{
+      stroke: rgba(0,0,0,.18);
+      stroke-width: 1.5;
+    }
+
     .bad{
       color:#7b1f1f;
       font-weight: 800;
@@ -306,7 +320,7 @@
       color: rgba(66,51,22,.75);
     }
 
-    /* Class colors (subtle nod to WoW) */
+    /* Class colors */
     .c-warrior{ color:#C79C6E; }
     .c-paladin{ color:#F58CBA; }
     .c-hunter{ color:#ABD473; }
@@ -332,7 +346,7 @@
         <div class="crest" aria-hidden="true"><span class="crest-text">HC</span></div>
         <div>
           <h1>Hardcore Party Tracker</h1>
-          <div class="subtitle">Levels only • sorted by level </div>
+          <div class="subtitle">Levels only • sorted by level • classic vibe</div>
         </div>
       </div>
       <div class="meta" id="meta">Loading…</div>
@@ -392,6 +406,30 @@
       return (Date.now() - t) > minutes * 60 * 1000;
     }
 
+    function sparkSvg(vals){
+      if (!Array.isArray(vals) || vals.length < 2) return "";
+
+      const w = 86, h = 24, pad = 2;
+      const n = vals.length;
+
+      const pts = vals.map((v, i) => {
+        const vv = Math.max(0, Math.min(100, Number(v)));
+        const x = pad + (i * (w - 2 * pad)) / (n - 1);
+        const y = pad + (1 - (vv / 100)) * (h - 2 * pad);
+        return [x, y];
+      });
+
+      const d = pts.map(([x,y], i) => (i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`)).join(" ");
+      const mid = pad + (h - 2 * pad) / 2;
+
+      return `
+        <svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+          <path class="bg" d="M ${pad} ${mid} L ${w-pad} ${mid}"></path>
+          <path d="${d}"></path>
+        </svg>
+      `;
+    }
+
     async function load(){
       const metaEl = document.getElementById("meta");
       const hintEl = document.getElementById("hint");
@@ -416,8 +454,8 @@
 
         dotEl.style.background = stale ? "rgba(180,80,60,.95)" : "rgba(70,160,90,.9)";
         hintEl.textContent = stale
-          ? "Snapshot looks a bit old (over ~30 minutes). The updater may not have run yet."
-          : "Showing latest snapshot.";
+          ? "Snapshot looks a bit old (over ~30 minutes). Your updater may not have run yet."
+          : "Showing latest snapshot. (Sorted by level.)";
 
         // Sort: highest level first; errors/unknown at bottom; tie-break by name
         const results = [...(data.results || [])];
@@ -439,6 +477,9 @@
           const p = Number.isFinite(r.xp_percent) ? Math.max(0, Math.min(1, r.xp_percent)) : null;
           const pct = (p === null) ? null : Math.round(p * 100);
 
+          const spark = sparkSvg(r.spark_7d);
+          const xp7d = Number.isFinite(r.xp_gained_7d) ? r.xp_gained_7d : null;
+
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${escapeHtml(r.name || "—")}</td>
@@ -447,16 +488,26 @@
             <td class="lvlCell">
               ${
                 ok
-                  ? `<span class="ring ${p === null ? "is-unknown" : ""}" style="--p:${p ?? 0}" title="${pct === null ? "XP unavailable" : `${pct}% to next level`}">
+                  ? `<span class="ring ${p === null ? "is-unknown" : ""}" style="--p:${p ?? 0}"
+                           title="${pct === null ? "XP unavailable" : `${pct}% to next level`}">
                        <span class="ring-label">${lvl}</span>
                      </span>`
                   : `<span class="ring is-unknown" style="--p:0" title="No data">
                        <span class="ring-label">—</span>
                      </span>`
               }
+
               ${
                 ok && Number.isFinite(r.delta_7d) && r.delta_7d > 0
                   ? `<span class="delta-week">(+${r.delta_7d} 7d)</span>`
+                  : ``
+              }
+
+              ${
+                ok && spark
+                  ? `<span title="${xp7d === null ? "XP gained (7d): unavailable" : `XP gained (7d): ${xp7d.toLocaleString()}`}">
+                       ${spark}
+                     </span>`
                   : ``
               }
             </td>
