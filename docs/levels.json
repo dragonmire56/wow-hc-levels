@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-04T21:56:10.399Z",
+  "generated_at": "2026-02-04T22:56:33.348Z",
   "region": "us",
   "results": [
     {
@@ -154,9 +154,9 @@
       "realm": "Doomhowl",
       "level": 21,
       "delta_7d": 2,
-      "experience": 15637,
+      "experience": 18874,
       "xp_to_next": 25200,
-      "xp_percent": 0.620515873015873,
+      "xp_percent": 0.748968253968254,
       "spark_7d": [
         0,
         0,
@@ -215,7 +215,7 @@
         0,
         100
       ],
-      "xp_gained_7d": 27844,
+      "xp_gained_7d": 31081,
       "class": "Rogue",
       "race": "Night Elf",
       "ok": true,
