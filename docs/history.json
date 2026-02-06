@@ -34,7 +34,7 @@
       },
       {
         "date": "2026-02-06",
-        "level": 18
+        "level": 19
       }
     ],
     "doomhowl:lerthros": [
@@ -70,7 +70,7 @@
       },
       {
         "date": "2026-02-06",
-        "level": 22
+        "level": 23
       }
     ],
     "doomhowl:biggles": [
@@ -88,5 +88,5 @@
       }
     ]
   },
-  "updated_at": "2026-02-06T05:07:55.269Z"
+  "updated_at": "2026-02-06T07:53:38.289Z"
 }
