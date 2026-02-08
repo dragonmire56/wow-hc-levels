@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-07T22:59:35.330Z",
+  "generated_at": "2026-02-08T00:01:27.496Z",
   "region": "us",
   "results": [
     {
@@ -53,7 +53,7 @@
         63,
         63,
         63,
-        63,
+        84,
         100,
         100,
         100,
@@ -139,7 +139,7 @@
         43,
         43,
         43,
-        43,
+        71,
         100
       ],
       "xp_gained_7d": 42191,
@@ -272,7 +272,7 @@
         57,
         57,
         57,
-        57,
+        100,
         100,
         100,
         100,
@@ -298,11 +298,11 @@
       "id": "doomhowl:biggles",
       "name": "Biggles",
       "realm": "Doomhowl",
-      "level": 54,
-      "delta_7d": 0,
-      "experience": 107425,
-      "xp_to_next": 173900,
-      "xp_percent": 0.6177400805060379,
+      "level": 55,
+      "delta_7d": 1,
+      "experience": 62655,
+      "xp_to_next": 180800,
+      "xp_percent": 0.3465431415929204,
       "spark_7d": [
         0,
         0,
@@ -358,10 +358,10 @@
         0,
         0,
         0,
-        100,
+        38,
         100
       ],
-      "xp_gained_7d": 77815,
+      "xp_gained_7d": 206945,
       "class": "Druid",
       "race": "Tauren",
       "ok": true,
