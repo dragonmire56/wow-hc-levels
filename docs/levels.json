@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-20T23:55:16.846Z",
+  "generated_at": "2026-02-21T04:53:44.090Z",
   "region": "us",
   "results": [
     {
@@ -299,7 +299,7 @@
       "name": "Biggles",
       "realm": "Doomhowl",
       "level": 57,
-      "delta_7d": 2,
+      "delta_7d": 1,
       "experience": 99156,
       "xp_to_next": 195000,
       "xp_percent": 0.5084923076923077,
@@ -308,15 +308,15 @@
         0,
         0,
         0,
-        0,
         17,
         17,
         17,
         17,
-        35,
         77,
         77,
         77,
+        77,
+        100,
         100,
         100,
         100,
