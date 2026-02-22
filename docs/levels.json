@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-21T23:59:49.077Z",
+  "generated_at": "2026-02-22T05:12:29.295Z",
   "region": "us",
   "results": [
     {
@@ -299,16 +299,16 @@
       "name": "Biggles",
       "realm": "Doomhowl",
       "level": 57,
-      "delta_7d": 1,
+      "delta_7d": 0,
       "experience": 99156,
       "xp_to_next": 195000,
       "xp_percent": 0.5084923076923077,
       "spark_7d": [
         0,
-        21,
-        72,
-        72,
-        72,
+        0,
+        0,
+        0,
+        100,
         100,
         100,
         100,
@@ -361,7 +361,7 @@
         100,
         100
       ],
-      "xp_gained_7d": 245508,
+      "xp_gained_7d": 69390,
       "class": "Druid",
       "race": "Tauren",
       "ok": true,
