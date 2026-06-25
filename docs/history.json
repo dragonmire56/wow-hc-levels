@@ -1830,7 +1830,37 @@
         "date": "2026-06-06",
         "level": 57
       }
+    ],
+    "doomhowl:jebbik": [
+      {
+        "date": "2026-06-25",
+        "level": 16
+      }
+    ],
+    "doomhowl:sereene": [
+      {
+        "date": "2026-06-25",
+        "level": 10
+      }
+    ],
+    "doomhowl:meruki": [
+      {
+        "date": "2026-06-25",
+        "level": 10
+      }
+    ],
+    "doomhowl:yukihira": [
+      {
+        "date": "2026-06-25",
+        "level": 26
+      }
+    ],
+    "doomhowl:zelmok": [
+      {
+        "date": "2026-06-25",
+        "level": 53
+      }
     ]
   },
-  "updated_at": "2026-06-25T01:33:50.099Z"
+  "updated_at": "2026-06-25T03:06:46.030Z"
 }
