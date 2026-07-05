@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T23:33:05.168Z",
+  "generated_at": "2026-07-05T01:17:39.655Z",
   "region": "us",
   "results": [
     {
@@ -467,7 +467,7 @@
         0,
         0,
         0,
-        0,
+        1,
         1,
         1,
         1,
@@ -639,18 +639,18 @@
       "name": "Zelmok",
       "realm": "Doomhowl",
       "level": 54,
-      "delta_7d": 1,
+      "delta_7d": 0,
       "experience": 9935,
       "xp_to_next": 173900,
       "xp_percent": 0.05713053479010926,
       "spark_7d": [
         0,
-        0,
         24,
         24,
         24,
         24,
         24,
+        99,
         99,
         99,
         99,
