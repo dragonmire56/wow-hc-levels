@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T23:14:03.127Z",
+  "generated_at": "2026-07-14T00:08:12.136Z",
   "region": "us",
   "results": [
     {
@@ -468,7 +468,7 @@
         0,
         0,
         0,
-        0,
+        53,
         53,
         53,
         53,
@@ -534,7 +534,7 @@
       "name": "Yukihira",
       "realm": "Doomhowl",
       "level": 28,
-      "delta_7d": 1,
+      "delta_7d": 0,
       "experience": 6212,
       "xp_to_next": 41400,
       "xp_percent": 0.15004830917874395,
