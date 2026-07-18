@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T23:26:20.974Z",
+  "generated_at": "2026-07-18T00:56:50.959Z",
   "region": "us",
   "results": [
     {
@@ -445,13 +445,13 @@
       "name": "Meruki",
       "realm": "Doomhowl",
       "level": 15,
-      "delta_7d": 1,
+      "delta_7d": 0,
       "experience": 1187,
       "xp_to_next": 14400,
       "xp_percent": 0.08243055555555556,
       "spark_7d": [
         0,
-        0,
+        100,
         100,
         100,
         100,
