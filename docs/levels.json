@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T23:40:44.536Z",
+  "generated_at": "2026-08-22T00:00:31.581Z",
   "region": "us",
   "results": [
     {
@@ -372,7 +372,7 @@
       "name": "Sereene",
       "realm": "Doomhowl",
       "level": 13,
-      "delta_7d": 3,
+      "delta_7d": 2,
       "experience": 4504,
       "xp_to_next": 11400,
       "xp_percent": 0.3950877192982456,
@@ -547,7 +547,7 @@
         0,
         0,
         0,
-        0,
+        62,
         64,
         64,
         64,
