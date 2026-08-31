@@ -3,6 +3,9 @@
   "locale": "en_US",
   "namespaces": ["profile-classic1x-us", "profile-classic-us"],
   "characters": [
+    { "name": "Whisperdin", "realm": "doomhowl" },
+    { "name": "Recknups", "realm": "doomhowl" },
+    { "name": "Lerthros", "realm": "doomhowl" },
     { "name": "Jebbik", "realm": "doomhowl" },
     { "name": "Sereene", "realm": "doomhowl" },
     { "name": "Meruki", "realm": "doomhowl" },
