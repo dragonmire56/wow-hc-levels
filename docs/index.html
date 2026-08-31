@@ -9,17 +9,13 @@
     :root{
       --bg1:#0b0f14;
       --bg2:#141b24;
-
       --ink:#1b1b1b;
       --muted:#6b5b3a;
-
       --gold1:#f6e4a6;
       --gold2:#caa24d;
       --gold3:#8a6a22;
-
       --paper1:#fbf3d1;
       --paper2:#efe0b0;
-
       --line: rgba(90, 70, 30, 0.25);
       --shadow: rgba(0,0,0,.35);
     }
@@ -37,10 +33,7 @@
       padding: 28px 16px 46px;
     }
 
-    .container{
-      max-width: 920px;
-      margin: 0 auto;
-    }
+    .container{ max-width: 920px; margin: 0 auto; }
 
     .banner{
       display:flex;
@@ -56,7 +49,6 @@
       gap: 12px;
     }
 
-    /* Crest badge */
     .crest{
       width: 44px;
       height: 44px;
@@ -204,12 +196,25 @@
       vertical-align: middle;
     }
 
-    tbody tr:nth-child(odd){
-      background: rgba(255,255,255,.18);
+    tbody tr:nth-child(odd){ background: rgba(255,255,255,.18); }
+    tbody tr:hover{ background: rgba(255,255,255,.35); }
+
+    tbody tr.max-level{
+      background:
+        linear-gradient(90deg, rgba(246,228,166,.38), rgba(255,255,255,.18), rgba(246,228,166,.38)) !important;
+      box-shadow:
+        inset 0 0 0 2px rgba(218,165,32,.85),
+        inset 0 0 18px rgba(218,165,32,.38);
     }
 
-    tbody tr:hover{
-      background: rgba(255,255,255,.35);
+    tbody tr.max-level td:first-child{
+      font-weight: 900;
+      color: #5f3f00;
+    }
+
+    tbody tr.max-level td:first-child::before{
+      content: "* ";
+      color: #b8860b;
     }
 
     .pill{
@@ -234,7 +239,6 @@
       opacity: .9;
     }
 
-    /* Weekly gain label */
     .delta-week{
       font-size: 12px;
       font-weight: 900;
@@ -243,7 +247,6 @@
       white-space: nowrap;
     }
 
-    /* Level cell layout */
     .lvlCell{
       display:flex;
       align-items:center;
@@ -251,7 +254,6 @@
       white-space: nowrap;
     }
 
-    /* Level ring (shades only the rim) */
     .ring{
       --p: 0;
       width: 34px;
@@ -260,12 +262,10 @@
       position: relative;
       display: grid;
       place-items: center;
-
       background: conic-gradient(
         rgba(40,160,70,.95) calc(var(--p) * 1turn),
         rgba(0,0,0,.18) 0
       );
-
       border: 1px solid rgba(0,0,0,.25);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
     }
@@ -273,9 +273,9 @@
     .ring::after{
       content:"";
       position:absolute;
-      inset: 6px; /* makes it a rim, not a filled disk */
+      inset: 6px;
       border-radius: 999px;
-      background: linear-gradient(180deg, var(--paper1), var(--paper2)); /* opaque center */
+      background: linear-gradient(180deg, var(--paper1), var(--paper2));
       box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
     }
 
@@ -292,7 +292,40 @@
       background: conic-gradient(rgba(0,0,0,.10) 0turn, rgba(0,0,0,.18) 0);
     }
 
-    /* Sparkline */
+    .ring.is-max-level{
+      background:
+        conic-gradient(
+          rgba(255,215,90,.98) 1turn,
+          rgba(0,0,0,.18) 0
+        );
+      border: 2px solid rgba(184,134,11,.95);
+      box-shadow:
+        0 0 0 2px rgba(255,236,150,.55),
+        0 0 14px rgba(218,165,32,.75),
+        inset 0 1px 0 rgba(255,255,255,.45);
+    }
+
+    .ring.is-max-level::after{
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255,245,190,.95), var(--paper2));
+    }
+
+    .max-badge{
+      display:inline-flex;
+      align-items:center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #5f3f00;
+      background: linear-gradient(180deg, #fff0a8, #d4a533);
+      border: 1px solid rgba(120,80,0,.35);
+      box-shadow: 0 1px 0 rgba(255,255,255,.45) inset;
+      white-space: nowrap;
+    }
+
     .spark{
       width: 86px;
       height: 24px;
@@ -320,11 +353,10 @@
       color: rgba(66,51,22,.75);
     }
 
-    /* Class colors */
     .c-warrior{ color:#C79C6E; }
     .c-paladin{ color:#F58CBA; }
     .c-hunter{ color:#ABD473; }
-    .c-rogue{ color:#8a6a22; }   /* readable on parchment */
+    .c-rogue{ color:#8a6a22; }
     .c-priest{ color:#6b6b6b; }
     .c-shaman{ color:#0070DE; }
     .c-mage{ color:#69CCF0; }
@@ -333,8 +365,8 @@
 
     @media (max-width: 680px){
       .meta{ text-align:left; white-space: normal; }
-      thead th:nth-child(2), tbody td:nth-child(2){ display:none; } /* hide realm */
-      thead th:nth-child(5), tbody td:nth-child(5){ display:none; } /* hide status */
+      thead th:nth-child(2), tbody td:nth-child(2){ display:none; }
+      thead th:nth-child(5), tbody td:nth-child(5){ display:none; }
     }
   </style>
 </head>
@@ -346,19 +378,19 @@
         <div class="crest" aria-hidden="true"><span class="crest-text">HC</span></div>
         <div>
           <h1>Hardcore Party Tracker</h1>
-          <div class="subtitle">Levels only • sorted by level </div>
+          <div class="subtitle">Levels only - sorted by level - classic vibe</div>
         </div>
       </div>
-      <div class="meta" id="meta">Loading…</div>
+      <div class="meta" id="meta">Loading...</div>
     </div>
 
     <div class="card">
       <div class="card-inner">
         <div class="toolbar">
-          <p class="hint" id="hint">Fetching latest snapshot…</p>
+          <p class="hint" id="hint">Fetching latest snapshot...</p>
           <div class="status-pill" id="statusPill" title="This is when your browser last fetched levels.json">
             <span class="dot" id="dot"></span>
-            <span id="lastFetch">—</span>
+            <span id="lastFetch">-</span>
           </div>
         </div>
 
@@ -454,10 +486,9 @@
 
         dotEl.style.background = stale ? "rgba(180,80,60,.95)" : "rgba(70,160,90,.9)";
         hintEl.textContent = stale
-          ? "Snapshot looks a bit old (over ~30 minutes). The updater may not have run yet."
-          : "Showing latest snapshot.";
+          ? "Snapshot looks a bit old (over ~30 minutes). Your updater may not have run yet."
+          : "Showing latest snapshot. (Sorted by level.)";
 
-        // Sort: highest level first; errors/unknown at bottom; tie-break by name
         const results = [...(data.results || [])];
         results.sort((a, b) => {
           const la = (a && a.ok && Number.isFinite(a.level)) ? a.level : -1;
@@ -470,7 +501,8 @@
         for (const r of results) {
           const ok = !!r.ok;
           const lvl = ok ? r.level : null;
-          const cls = r.class || "—";
+          const isMaxLevel = ok && Number(lvl) >= 60;
+          const cls = r.class || "-";
           const status = ok ? "OK" : ("ERR " + (r.error?.status ?? ""));
           const clsClass = classSlug(cls);
 
@@ -481,19 +513,21 @@
           const xp7d = Number.isFinite(r.xp_gained_7d) ? r.xp_gained_7d : null;
 
           const tr = document.createElement("tr");
+          if (isMaxLevel) tr.classList.add("max-level");
+
           tr.innerHTML = `
-            <td>${escapeHtml(r.name || "—")}</td>
-            <td>${escapeHtml(r.realm || "—")}</td>
+            <td>${escapeHtml(r.name || "-")}</td>
+            <td>${escapeHtml(r.realm || "-")}</td>
 
             <td class="lvlCell">
               ${
                 ok
-                  ? `<span class="ring ${p === null ? "is-unknown" : ""}" style="--p:${p ?? 0}"
+                  ? `<span class="ring ${isMaxLevel ? "is-max-level" : (p === null ? "is-unknown" : "")}" style="--p:${isMaxLevel ? 1 : (p ?? 0)}"
                            title="${pct === null ? "XP unavailable" : `${pct}% to next level`}">
                        <span class="ring-label">${lvl}</span>
                      </span>`
                   : `<span class="ring is-unknown" style="--p:0" title="No data">
-                       <span class="ring-label">—</span>
+                       <span class="ring-label">-</span>
                      </span>`
               }
 
@@ -510,6 +544,12 @@
                      </span>`
                   : ``
               }
+
+              ${
+                isMaxLevel
+                  ? `<span class="max-badge">Elite 60</span>`
+                  : ``
+              }
             </td>
 
             <td><span class="pill ${clsClass}">${escapeHtml(cls)}</span></td>
@@ -518,7 +558,7 @@
           rowsEl.appendChild(tr);
         }
       } catch (e) {
-        metaEl.textContent = "Couldn’t load levels.json";
+        metaEl.textContent = "Could not load levels.json";
         hintEl.textContent = "If you just ran the updater, wait a moment and refresh. Otherwise check your Actions logs.";
         lastFetchEl.textContent = "Fetch failed";
         dotEl.style.background = "rgba(180,80,60,.95)";
