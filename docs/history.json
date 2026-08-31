@@ -3338,7 +3338,25 @@
         "date": "2026-08-31",
         "level": 10
       }
+    ],
+    "doomhowl:zarchoomi": [
+      {
+        "date": "2026-08-31",
+        "level": 60
+      }
+    ],
+    "doomhowl:jamie": [
+      {
+        "date": "2026-08-31",
+        "level": 60
+      }
+    ],
+    "doomhowl:biggshots": [
+      {
+        "date": "2026-08-31",
+        "level": 44
+      }
     ]
   },
-  "updated_at": "2026-08-31T11:50:55.237Z"
+  "updated_at": "2026-08-31T15:27:34.215Z"
 }
