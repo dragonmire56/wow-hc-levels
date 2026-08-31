@@ -3,17 +3,17 @@
   "locale": "en_US",
   "namespaces": ["profile-classic1x-us", "profile-classic-us"],
   "characters": [
-    { "name": "whisperdin", "realm": "doomhowl" },
-    { "name": "recknups", "realm": "doomhowl" },
-    { "name": "thylessa", "realm": "doomhowl" },
-    { "name": "lerthros", "realm": "doomhowl" },
     { "name": "Jebbik", "realm": "doomhowl" },
     { "name": "Sereene", "realm": "doomhowl" },
     { "name": "Meruki", "realm": "doomhowl" },
     { "name": "Jugemo", "realm": "doomhowl" },
     { "name": "Yukihira", "realm": "doomhowl" },
+    { "name": "Thylessa", "realm": "doomhowl" },
     { "name": "Kregar", "realm": "doomhowl" },
     { "name": "Krodral", "realm": "doomhowl" },
-    { "name": "Zelmok", "realm": "doomhowl" }
+    { "name": "Zelmok", "realm": "doomhowl" },
+    { "name": "Jamie", "realm": "doomhowl" },
+    { "name": "Zarchoomi", "realm": "doomhowl" },
+    { "name": "Biggshots", "realm": "doomhowl" }
   ]
 }
