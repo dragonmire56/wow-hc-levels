@@ -43,75 +43,70 @@ function clamp01(x) {
   return Math.max(0, Math.min(1, x));
 }
 
-/**
- * Vanilla / Classic XP to next level (1–60).
- * Index = current level. Value = XP required to reach next level.
- */
 const XP_TO_NEXT_CLASSIC = [
-  null,   // 0
-  400,    // 1
-  900,    // 2
-  1400,   // 3
-  2100,   // 4
-  2800,   // 5
-  3600,   // 6
-  4500,   // 7
-  5400,   // 8
-  6500,   // 9
-  7600,   // 10
-  8800,   // 11
-  10100,  // 12
-  11400,  // 13
-  12900,  // 14
-  14400,  // 15
-  16000,  // 16
-  17700,  // 17
-  19400,  // 18
-  21300,  // 19
-  23200,  // 20
-  25200,  // 21
-  27300,  // 22
-  29400,  // 23
-  31700,  // 24
-  34000,  // 25
-  36400,  // 26
-  38900,  // 27
-  41400,  // 28
-  44300,  // 29
-  47400,  // 30
-  50800,  // 31
-  54500,  // 32
-  58600,  // 33
-  62800,  // 34
-  67100,  // 35
-  71600,  // 36
-  76100,  // 37
-  80800,  // 38
-  85700,  // 39
-  90700,  // 40
-  95800,  // 41
-  101000, // 42
-  106300, // 43
-  111800, // 44
-  117500, // 45
-  123200, // 46
-  129100, // 47
-  135100, // 48
-  141200, // 49
-  147500, // 50
-  153900, // 51
-  160400, // 52
-  167100, // 53
-  173900, // 54
-  180800, // 55
-  187900, // 56
-  195000, // 57
-  202300, // 58
-  209800, // 59
-  217400, // 60 (not used beyond 60)
+  null,
+  400,
+  900,
+  1400,
+  2100,
+  2800,
+  3600,
+  4500,
+  5400,
+  6500,
+  7600,
+  8800,
+  10100,
+  11400,
+  12900,
+  14400,
+  16000,
+  17700,
+  19400,
+  21300,
+  23200,
+  25200,
+  27300,
+  29400,
+  31700,
+  34000,
+  36400,
+  38900,
+  41400,
+  44300,
+  47400,
+  50800,
+  54500,
+  58600,
+  62800,
+  67100,
+  71600,
+  76100,
+  80800,
+  85700,
+  90700,
+  95800,
+  101000,
+  106300,
+  111800,
+  117500,
+  123200,
+  129100,
+  135100,
+  141200,
+  147500,
+  153900,
+  160400,
+  167100,
+  173900,
+  180800,
+  187900,
+  195000,
+  202300,
+  209800,
+  217400
 ];
 
-// XP_START[level] = total XP needed to reach the START of this level.
 const XP_START = (() => {
   const start = Array(61).fill(0);
   start[1] = 0;
@@ -140,7 +135,6 @@ function totalXpClassic(level, experience) {
   return base + exp;
 }
 
-// ---- weekly level history helpers (daily points) ----
 function upsertDailyPoint(arr, date, level) {
   const idx = arr.findIndex(x => x.date === date);
   if (idx >= 0) arr[idx].level = level;
@@ -164,7 +158,6 @@ function deltaFromWindow(arr, windowStartDate, currentLevel) {
   return currentLevel - baseline.level;
 }
 
-// ---- xp history helpers (timestamped points) ----
 function pruneXpOlderThan(arr, cutoffMs) {
   return arr.filter(x => Number.isFinite(x.t) && x.t >= cutoffMs && Number.isFinite(x.xp));
 }
@@ -178,13 +171,9 @@ function pushXpPoint(arr, tMs, totalXp) {
   }
 }
 
-/**
- * Build a fixed-length spark series (0..100) from XP points in last 7d.
- * We bin to 56 points (~3 hours per point).
- */
 function buildSpark7d(points, nowMs) {
-  const WINDOW_MS = 7 * 24 * 3600 * 1000; // 7 days
-  const BIN_COUNT = 56;                   // ~3-hour bins
+  const WINDOW_MS = 7 * 24 * 3600 * 1000;
+  const BIN_COUNT = 56;
   const BIN_MS = WINDOW_MS / BIN_COUNT;
 
   const startMs = nowMs - WINDOW_MS;
@@ -195,7 +184,6 @@ function buildSpark7d(points, nowMs) {
 
   if (relevant.length < 2) return { spark: null, gained: null };
 
-  // Fill bins with the latest xp observed up to bin end
   let idx = 0;
   let lastXp = relevant[0].xp;
   const series = [];
@@ -233,9 +221,9 @@ async function getToken() {
     method: "POST",
     headers: {
       Authorization: `Basic ${b64(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: "grant_type=client_credentials",
+    body: "grant_type=client_credentials"
   });
   if (!res.ok) throw new Error(`Token failed: ${res.status} ${await res.text()}`);
   const j = await res.json();
@@ -262,15 +250,12 @@ async function fetchWithFallbackNamespaces(token, realmSlug, nameLower) {
   return { ok: false, status: 404, detail: "Not found in provided namespaces" };
 }
 
-// ---- load history files ----
 await fs.mkdir("docs", { recursive: true });
 
-// daily level history (for delta_7d)
 const levelHistoryPath = "docs/history.json";
 const levelHistory = (await readJsonIfExists(levelHistoryPath)) ?? { version: 1, by_id: {} };
 levelHistory.by_id = levelHistory.by_id || {};
 
-// xp history (for sparkline)
 const xpHistoryPath = "docs/xp_history.json";
 const xpHistory = (await readJsonIfExists(xpHistoryPath)) ?? { version: 1, by_id: {} };
 xpHistory.by_id = xpHistory.by_id || {};
@@ -280,14 +265,14 @@ const cutoffKeepDaily = utcDateDaysAgo(90);
 const windowStart = utcDateDaysAgo(7);
 
 const nowMs = Date.now();
-const xpCutoffMs = nowMs - (10 * 24 * 3600 * 1000); // keep ~10 days of xp points
+const xpCutoffMs = nowMs - (10 * 24 * 3600 * 1000);
 
 const token = await getToken();
 
 const results = await Promise.all(
   cfg.characters.map(async (c) => {
     const nameLower = String(c.name || "").toLowerCase();
-    const realmSlug = String(c.realm || "").toLowerCase(); // slug in your config
+    const realmSlug = String(c.realm || "").toLowerCase();
     const id = makeId(realmSlug, nameLower);
 
     try {
@@ -304,15 +289,14 @@ const results = await Promise.all(
           xp_percent: null,
           spark_7d: null,
           xp_gained_7d: null,
-          error: { status: out.status, detail: out.detail },
+          error: { status: out.status, detail: out.detail }
         };
       }
 
       const j = out.data;
       const level = j.level;
-      const experience = j.experience; // XP into current level
+      const experience = j.experience;
 
-      // --- update daily level history ---
       if (Number.isFinite(level)) {
         const arr = levelHistory.by_id[id] ?? [];
         upsertDailyPoint(arr, today, level);
@@ -322,10 +306,8 @@ const results = await Promise.all(
       const dailyArr = levelHistory.by_id[id] ?? [];
       const delta_7d = deltaFromWindow(dailyArr, windowStart, level);
 
-      // --- xp ring meta ---
       const { xp_to_next, xp_percent } = xpMeta(level, experience);
 
-      // --- xp time series for sparkline (cumulative XP) ---
       const total_xp = totalXpClassic(level, experience);
       if (Number.isFinite(total_xp)) {
         const arr = xpHistory.by_id[id] ?? [];
@@ -345,13 +327,13 @@ const results = await Promise.all(
         delta_7d,
         experience: Number.isFinite(experience) ? experience : null,
         xp_to_next,
-        xp_percent,           // 0..1
-        spark_7d: spark,      // array of 0..100 (or null)
-        xp_gained_7d: gained, // raw xp gained (or null)
+        xp_percent,
+        spark_7d: spark,
+        xp_gained_7d: gained,
         class: j.character_class?.name,
         race: j.race?.name,
         ok: true,
-        namespace_used: out.ns,
+        namespace_used: out.ns
       };
     } catch (e) {
       return {
@@ -365,7 +347,7 @@ const results = await Promise.all(
         xp_percent: null,
         spark_7d: null,
         xp_gained_7d: null,
-        error: { status: "fetch_error", detail: String(e) },
+        error: { status: "fetch_error", detail: String(e) }
       };
     }
   })
@@ -374,7 +356,7 @@ const results = await Promise.all(
 const payload = {
   generated_at: new Date().toISOString(),
   region: REGION,
-  results,
+  results
 };
 
 levelHistory.updated_at = new Date().toISOString();
