@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T15:49:12.242Z",
+  "generated_at": "2026-10-04T18:49:40.933Z",
   "region": "us",
   "results": [
     {
@@ -916,9 +916,9 @@
       "realm": "Doomhowl",
       "level": 57,
       "delta_7d": 1,
-      "experience": 40570,
+      "experience": 131313,
       "xp_to_next": 195000,
-      "xp_percent": 0.20805128205128204,
+      "xp_percent": 0.6734,
       "spark_7d": [
         0,
         0,
@@ -971,13 +971,13 @@
         0,
         0,
         0,
-        0,
-        100,
-        100,
-        100,
+        66,
+        66,
+        66,
+        66,
         100
       ],
-      "xp_gained_7d": 175707,
+      "xp_gained_7d": 266450,
       "class": "Hunter",
       "race": "Night Elf",
       "ok": true,
