@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T17:54:15.179Z",
+  "generated_at": "2026-10-17T20:22:49.348Z",
   "region": "us",
   "results": [
     {
@@ -921,9 +921,9 @@
       "xp_percent": 1,
       "spark_7d": [
         0,
-        49,
-        49,
-        49,
+        0,
+        0,
+        100,
         100,
         100,
         100,
@@ -977,7 +977,7 @@
         100,
         100
       ],
-      "xp_gained_7d": 475787,
+      "xp_gained_7d": 240601,
       "class": "Hunter",
       "race": "Night Elf",
       "ok": true,
