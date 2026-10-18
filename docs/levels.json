@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T22:33:21.915Z",
+  "generated_at": "2026-10-18T00:12:54.147Z",
   "region": "us",
   "results": [
     {
@@ -915,7 +915,7 @@
       "name": "Biggshots",
       "realm": "Doomhowl",
       "level": 60,
-      "delta_7d": 2,
+      "delta_7d": 0,
       "experience": 0,
       "xp_to_next": null,
       "xp_percent": 1,
